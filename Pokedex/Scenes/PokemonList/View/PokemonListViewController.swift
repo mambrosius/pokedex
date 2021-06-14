@@ -9,6 +9,11 @@ import UIKit
 
 class PokemonListViewController: UIViewController {
 
+    // MARK: - Properties
+    lazy var viewModel: PokemonListViewModel = {
+        PokemonListViewModel()
+    }()
+    
     // MARK: - Init
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -28,8 +33,7 @@ class PokemonListViewController: UIViewController {
     
     // MARK: - Components
     lazy var label: UILabel = {
-        let label = UILabel()
-        label.text = "Welcome to Pokédex"
+        let label = UILabel(text: "Welcome to Pokédex")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
