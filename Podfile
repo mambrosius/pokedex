@@ -7,6 +7,7 @@ target 'Pokedex' do
   
   # Pods for Pokedex
   pod 'SwiftLint'
+  pod 'RxSwift', '6.2.0'
 end
 
 post_install do |installer|

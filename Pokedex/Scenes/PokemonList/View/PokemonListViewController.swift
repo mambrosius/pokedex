@@ -6,22 +6,27 @@
 //
 
 import UIKit
+import RxSwift
 
 class PokemonListViewController: UIViewController {
 
+    // MARK: - Constants
+    private let disposeBag = DisposeBag()
+    
     // MARK: - Properties
-    lazy var viewModel: PokemonListViewModel = {
-        PokemonListViewModel(delegate: self)
+    private lazy var viewModel: PokemonListViewModel = {
+        PokemonListViewModel()
     }()
     
-    lazy var adapter: PokemonListAdapter = {
+    private lazy var adapter: PokemonListAdapter = {
         PokemonListAdapter(delegate: self)
     }()
     
     // MARK: - Init
     init() {
         super.init(nibName: nil, bundle: nil)
-        setup()
+        setupBindings()
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
@@ -35,7 +40,24 @@ class PokemonListViewController: UIViewController {
     }
     
     // MARK: - Setup
-    private func setup() {
+    private func setupBindings() {
+        viewModel.isLoading
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: updateIsLoading)
+            .disposed(by: disposeBag)
+        
+        viewModel.pokemonListItems
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: updateTableView)
+            .disposed(by: disposeBag)
+        
+        viewModel.errorMessage
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: presentErrorMessage)
+            .disposed(by: disposeBag)
+    }
+    
+    private func setupUI() {
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
@@ -47,8 +69,20 @@ class PokemonListViewController: UIViewController {
         ])
     }
     
+    // MARK: - Update
+    private func updateIsLoading(_ isLoading: Bool) {
+        isLoading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+        UIView.animate(withDuration: 0.2) {
+            self.tableView.alpha = isLoading ? 0 : 1
+        }
+    }
+    
+    private func updateTableView(_ items: [PokemonListItem]) {
+        tableView.reloadData()
+    }
+    
     // MARK: - Components
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -58,7 +92,7 @@ class PokemonListViewController: UIViewController {
         return tableView
     }()
     
-    lazy var activityIndicator: UIActivityIndicatorView = {
+    private lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .gray)
         activityIndicator.hidesWhenStopped = true
         activityIndicator.center = view.center
@@ -66,36 +100,10 @@ class PokemonListViewController: UIViewController {
     }()
     
     // MARK: - Utils
-    private func presentAlertWith(title: String, message: String) {
-        let alertCon = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    private func presentErrorMessage(_ message: String) {
+        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
         alertCon.addAction(.init(title: "OK", style: .default))
         present(alertCon, animated: true)
-    }
-}
-
-// MARK: - PokemonListViewModelDelegate
-extension PokemonListViewController: PokemonListViewModelDelegate {
-    func updateSpinner(_ isLoading: Bool) {
-        DispatchQueue.main.async {
-            isLoading
-                ? self.activityIndicator.startAnimating()
-                : self.activityIndicator.stopAnimating()
-            UIView.animate(withDuration: 0.2) {
-                self.tableView.alpha = isLoading ? 0 : 1
-            }
-        }
-    }
-    
-    func showErrorMessage(_ message: String) {
-        DispatchQueue.main.async {
-            self.presentAlertWith(title: "Opps..", message: message)
-        }
-    }
-    
-    func reloadTableView() {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
     }
 }
 
@@ -114,7 +122,7 @@ extension PokemonListViewController: PokemonListProtocol {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            presentAlertWith(title: "Opps...", message: "Could not open link")
+            presentErrorMessage("Could not open link")
         }
     }
 }

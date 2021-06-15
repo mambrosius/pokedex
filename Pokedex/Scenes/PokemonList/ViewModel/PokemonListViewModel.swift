@@ -6,63 +6,50 @@
 //
 
 import Foundation
-
-protocol PokemonListViewModelDelegate: AnyObject {
-    func updateSpinner(_ isLoading: Bool)
-    func showErrorMessage(_ message: String)
-    func reloadTableView()
-}
+import RxSwift
 
 class PokemonListViewModel {
     
     // MARK: - Constants
     let apiService: ApiServiceProtocol
     
-    // MARK: - Delegate
-    weak var delegate: PokemonListViewModelDelegate?
-    
     // MARK: - Variables
     private var currentPage: PokemonListPage?
-    private var pokemonListItems = [PokemonListItem]() {
-        didSet {
-            delegate?.reloadTableView()
-        }
-    }
     
-    private var isLoading = false {
-        didSet {
-            delegate?.updateSpinner(isLoading)
-        }
-    }
+    // MARK: - Observables
+    let isLoading = PublishSubject<Bool>()
+    let errorMessage = PublishSubject<String>()
+    let pokemonListItems = BehaviorSubject<[PokemonListItem]>(value: .init())
     
     // MARK: - Computed properties
     var numberOfItems: Int {
-        pokemonListItems.count
+        guard let numberOfItems = try? pokemonListItems.value().count else { return 0 }
+        return numberOfItems
     }
     
     // MARK: - Init
-    init(apiService: ApiServiceProtocol = ApiService(), delegate: PokemonListViewModelDelegate) {
+    init(apiService: ApiServiceProtocol = ApiService()) {
         self.apiService = apiService
-        self.delegate = delegate
     }
     
     // MARK: - Api
     func fetchPokemons() {
-        isLoading = true
+        isLoading.onNext(true)
         apiService.getPokemons { [weak self] result in
             switch result {
             case .failure(let error):
-                self?.delegate?.showErrorMessage(error.description)
+                self?.errorMessage.onNext(error.description)
             case .success(let pokemonListPage):
                 self?.currentPage = pokemonListPage
-                self?.pokemonListItems = pokemonListPage.results
+                self?.pokemonListItems.onNext(pokemonListPage.results)
             }
-            self?.isLoading = false
+            self?.isLoading.onNext(false)
         }
     }
     
     // MARK: - Utils
     func getItemAt(_ indexPath: IndexPath) -> PokemonListItem {
-        return pokemonListItems[indexPath.row]
+        guard let item = try? pokemonListItems.value()[indexPath.row] else { fatalError() }
+        return item
     }
 }
