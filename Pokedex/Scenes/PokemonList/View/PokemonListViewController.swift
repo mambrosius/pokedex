@@ -24,6 +24,12 @@ class PokemonListViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Life cycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.fetchPokemons()
+    }
+    
     // MARK: - Setup
     private func setup() {
         view.addSubview(label)

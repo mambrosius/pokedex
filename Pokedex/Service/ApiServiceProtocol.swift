@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ApiServiceProtocol: AnyObject {
-    
+    func getPokemons(completion: @escaping ApiServiceResult<PokemonListPage>)
 }
