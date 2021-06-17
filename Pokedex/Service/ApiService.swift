@@ -19,8 +19,8 @@ class ApiService: ApiServiceProtocol {
     }()
     
     // MARK: - ApiServiceProtocol
-    func getPokemons(completion: @escaping ApiServiceResult<PokemonListPage>) {
-        get("https://pokeapi.co/api/v2/pokemon", completion: completion)
+    func getPokemons(_ nextPageUrl: URL?, completion: @escaping ApiServiceResult<PokemonListPage>) {
+        get(nextPageUrl?.absoluteString ?? "https://pokeapi.co/api/v2/pokemon", completion: completion)
     }
     
     // MARK: - Utils

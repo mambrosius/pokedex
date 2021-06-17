@@ -9,7 +9,7 @@ import UIKit
 import RxSwift
 
 class PokemonListViewController: UIViewController {
-
+    
     // MARK: - Constants
     private let disposeBag = DisposeBag()
     
@@ -41,12 +41,12 @@ class PokemonListViewController: UIViewController {
     
     // MARK: - Setup
     private func setupBindings() {
-        viewModel.isLoading
+        viewModel.showLoadingIndicator
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: updateIsLoading)
             .disposed(by: disposeBag)
         
-        viewModel.pokemonListItems
+        viewModel.indexPathsToReload
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: updateTableView)
             .disposed(by: disposeBag)
@@ -67,6 +67,8 @@ class PokemonListViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+        
+        activityIndicator.startAnimating()
     }
     
     // MARK: - Update
@@ -77,8 +79,23 @@ class PokemonListViewController: UIViewController {
         }
     }
     
-    private func updateTableView(_ items: [PokemonListItem]) {
-        tableView.reloadData()
+    private func updateTableView(_ indexPaths: [IndexPath]) {
+        tableView.numberOfRows(inSection: 0) > 0
+            ? tableView.reloadRows(at: visibleIndexPathsToReload(intersecting: indexPaths), with: .automatic)
+            : tableView.reloadData()
+    }
+    
+    // MARK: - Utils
+    private func presentErrorMessage(_ message: String) {
+        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
+        alertCon.addAction(.init(title: "OK", style: .default))
+        present(alertCon, animated: true)
+    }
+    
+    private func visibleIndexPathsToReload(intersecting indexPaths: [IndexPath]) -> [IndexPath] {
+        let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows ?? []
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        return Array(indexPathsIntersection)
     }
     
     // MARK: - Components
@@ -86,6 +103,8 @@ class PokemonListViewController: UIViewController {
         let tableView = UITableView()
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.showsVerticalScrollIndicator = false
+        tableView.prefetchDataSource = adapter
         tableView.dataSource = adapter
         tableView.delegate = adapter
         tableView.alpha = 0
@@ -98,29 +117,29 @@ class PokemonListViewController: UIViewController {
         activityIndicator.center = view.center
         return activityIndicator
     }()
-    
-    // MARK: - Utils
-    private func presentErrorMessage(_ message: String) {
-        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
-        alertCon.addAction(.init(title: "OK", style: .default))
-        present(alertCon, animated: true)
-    }
 }
 
 // MARK: - PokemonListProtocol
 extension PokemonListViewController: PokemonListProtocol {
-    func getItemAt(_ indexPath: IndexPath) -> PokemonListItem {
+    func getItemAt(_ indexPath: IndexPath) -> PokemonListItem? {
         return viewModel.getItemAt(indexPath)
     }
     
-    func getNumberOfItems() -> Int {
-        return viewModel.numberOfItems
+    func getCurrentNumberOfItems() -> Int {
+        return viewModel.currentNumberOfItems
+    }
+    
+    func getTotalNumberOfItems() -> Int {
+        return viewModel.totalNumberOfItems
+    }
+    
+    func fetchNewItems() {
+        viewModel.fetchPokemons()
     }
     
     func itemSelectedAt(_ indexPath: IndexPath) {
-        let url = viewModel.getItemAt(indexPath).url
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url)
+        if let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) {
+            UIApplication.shared.open(item.url)
         } else {
             presentErrorMessage("Could not open link")
         }
