@@ -8,7 +8,7 @@
 import UIKit
 import RxSwift
 
-class PokemonListViewController: UIViewController {
+class PokemonListViewController: BaseViewController {
     
     // MARK: - Constants
     private let disposeBag = DisposeBag()
@@ -22,17 +22,6 @@ class PokemonListViewController: UIViewController {
         PokemonListAdapter(delegate: self)
     }()
     
-    // MARK: - Init
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        setupBindings()
-        setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     // MARK: - Life cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -40,7 +29,9 @@ class PokemonListViewController: UIViewController {
     }
     
     // MARK: - Setup
-    private func setupBindings() {
+    override func setupBindings() {
+        super.setupBindings()
+        
         viewModel.showLoadingIndicator
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: updateIsLoading)
@@ -57,7 +48,10 @@ class PokemonListViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    private func setupUI() {
+    override func setupUI() {
+        super.setupUI()
+        title = "Pokédex"
+        
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
@@ -102,6 +96,7 @@ class PokemonListViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
+        tableView.backgroundColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.showsVerticalScrollIndicator = false
         tableView.prefetchDataSource = adapter
@@ -138,10 +133,8 @@ extension PokemonListViewController: PokemonListProtocol {
     }
     
     func itemSelectedAt(_ indexPath: IndexPath) {
-        if let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) {
-            UIApplication.shared.open(item.url)
-        } else {
-            presentErrorMessage("Could not open link")
-        }
+        guard let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) else { return }
+        let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: .init(pokemonListItem: item))
+        navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
     }
 }

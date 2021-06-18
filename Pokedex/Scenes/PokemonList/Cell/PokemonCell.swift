@@ -27,6 +27,7 @@ class PokemonCell: UITableViewCell {
     
     // MARK: - Setup
     private func setup() {
+        backgroundColor = .clear
         contentView.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -44,6 +45,7 @@ class PokemonCell: UITableViewCell {
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
         return label
     }()
 }
