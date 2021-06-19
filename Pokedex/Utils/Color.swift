@@ -12,4 +12,3 @@ struct Color {
     static let grayBackground = UIColor(named: "gray-background")
     static let grayCard = UIColor(named: "gray-card")
 }
-
