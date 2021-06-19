@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct PokemonListPage: Codable {
+struct PokemonListPage: Decodable {
     let count: Int
     let next: URL?
     let previous: URL?
-    let results: [PokemonListItem]
+    let results: [Link]
 }

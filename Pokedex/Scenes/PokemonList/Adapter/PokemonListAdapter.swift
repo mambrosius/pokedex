@@ -36,7 +36,7 @@ extension PokemonListAdapter: UITableViewDataSource {
         if isMissingDataAt(indexPath) {
             // add shimmer
         } else if let item = delegate?.getItemAt(indexPath) {
-            cell.nameLabel.text = item.name
+            cell.pokemonLink = item
         }
         
         return cell

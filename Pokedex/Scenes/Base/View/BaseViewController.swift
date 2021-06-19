@@ -6,8 +6,12 @@
 //
 
 import UIKit
+import RxSwift
 
 class BaseViewController: UIViewController {
+    
+    // MARK: - Constants
+    let disposeBag = DisposeBag()
     
     // MARK: - Init
     init() {
@@ -44,5 +48,12 @@ class BaseViewController: UIViewController {
     // MARK: - Actions
     @objc private func backButtonTouched() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    // MARK: - Utils
+    func presentErrorMessage(_ message: String) {
+        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
+        alertCon.addAction(.init(title: "OK", style: .default))
+        present(alertCon, animated: true)
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PokemonListProtocol: AnyObject {
-    func getItemAt(_ indexPath: IndexPath) -> PokemonListItem?
+    func getItemAt(_ indexPath: IndexPath) -> Link?
     func itemSelectedAt(_ indexPath: IndexPath)
     func getCurrentNumberOfItems() -> Int
     func getTotalNumberOfItems() -> Int

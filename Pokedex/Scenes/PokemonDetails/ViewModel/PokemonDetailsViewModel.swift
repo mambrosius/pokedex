@@ -6,14 +6,33 @@
 //
 
 import Foundation
+import RxSwift
 
-class PokemonDetailsViewModel {
+class PokemonDetailsViewModel: BaseViewModel {
     
     // MARK: - Properties
-    let pokemonListItem: PokemonListItem
+    let pokemonLink: Link
+    
+    // MARK: - Observables
+    let showLoadingIndicator = PublishSubject<Bool>()
+    let fetchedPokemon = PublishSubject<Pokemon>()
+    let errorMessage = PublishSubject<String>()
     
     // MARK: - Init
-    init(pokemonListItem: PokemonListItem) {
-        self.pokemonListItem = pokemonListItem
+    init(apiService: ApiServiceProtocol = ApiService(), pokemonLink: Link) {
+        self.pokemonLink = pokemonLink
+        super.init(apiService: apiService)
+    }
+    
+    // MARK: - Api
+    func fetchPokemon() {
+        apiService.getPokemon(pokemonLink.url) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                self?.errorMessage.onNext(error.description)
+            case .success(let pokemon):
+                self?.fetchedPokemon.onNext(pokemon)
+            }
+        }
     }
 }

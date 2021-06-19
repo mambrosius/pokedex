@@ -10,9 +10,6 @@ import RxSwift
 
 class PokemonListViewController: BaseViewController {
     
-    // MARK: - Constants
-    private let disposeBag = DisposeBag()
-    
     // MARK: - Properties
     private lazy var viewModel: PokemonListViewModel = {
         PokemonListViewModel()
@@ -25,7 +22,7 @@ class PokemonListViewController: BaseViewController {
     // MARK: - Life cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.fetchPokemons()
+        viewModel.fetchPokemonLinks()
     }
     
     // MARK: - Setup
@@ -80,12 +77,6 @@ class PokemonListViewController: BaseViewController {
     }
     
     // MARK: - Utils
-    private func presentErrorMessage(_ message: String) {
-        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
-        alertCon.addAction(.init(title: "OK", style: .default))
-        present(alertCon, animated: true)
-    }
-    
     private func visibleIndexPathsToReload(intersecting indexPaths: [IndexPath]) -> [IndexPath] {
         let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows ?? []
         let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
@@ -116,7 +107,7 @@ class PokemonListViewController: BaseViewController {
 
 // MARK: - PokemonListProtocol
 extension PokemonListViewController: PokemonListProtocol {
-    func getItemAt(_ indexPath: IndexPath) -> PokemonListItem? {
+    func getItemAt(_ indexPath: IndexPath) -> Link? {
         return viewModel.getItemAt(indexPath)
     }
     
@@ -129,12 +120,12 @@ extension PokemonListViewController: PokemonListProtocol {
     }
     
     func fetchNewItems() {
-        viewModel.fetchPokemons()
+        viewModel.fetchPokemonLinks()
     }
     
     func itemSelectedAt(_ indexPath: IndexPath) {
         guard let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) else { return }
-        let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: .init(pokemonListItem: item))
+        let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: .init(pokemonLink: item))
         navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
     }
 }

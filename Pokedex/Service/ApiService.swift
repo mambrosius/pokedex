@@ -20,11 +20,19 @@ class ApiService: ApiServiceProtocol {
     
     // MARK: - ApiServiceProtocol
     func getPokemons(_ nextPageUrl: URL?, completion: @escaping ApiServiceResult<PokemonListPage>) {
-        get(nextPageUrl?.absoluteString ?? "https://pokeapi.co/api/v2/pokemon", completion: completion)
+        get(nextPageUrl?.absoluteString ?? "https://pokeapi.co/api/v2/pokemon", completion)
+    }
+    
+    func getPokemon(_ url: URL, completion: @escaping ApiServiceResult<Pokemon>) {
+        get(url.absoluteString, completion)
     }
     
     // MARK: - Utils
-    func get<T: Decodable>(_ url: String, completion: @escaping ApiServiceResult<T>) {
+    func getArtworkUrlFor(_ id: Int) -> URL? {
+        URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png")
+    }
+    
+    private func get<T: Decodable>(_ url: String, _ completion: @escaping ApiServiceResult<T>) {
         guard let url = URL(string: url) else {
             completion(.failure(.client("Invalid url")))
             return

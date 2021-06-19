@@ -9,4 +9,6 @@ import Foundation
 
 protocol ApiServiceProtocol: AnyObject {
     func getPokemons(_ nextPageUrl: URL?, completion: @escaping ApiServiceResult<PokemonListPage>)
+    func getPokemon(_ url: URL, completion: @escaping ApiServiceResult<Pokemon>)
+    func getArtworkUrlFor(_ id: Int) -> URL?
 }
