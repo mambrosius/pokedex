@@ -52,11 +52,11 @@ class PokemonListViewController: BaseViewController {
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        tableView.setConstraints([
+            .top(anchor: view.topAnchor),
+            .leading(anchor: view.leadingAnchor),
+            .trailing(anchor: view.trailingAnchor),
+            .bottom(anchor: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
         activityIndicator.startAnimating()
@@ -88,7 +88,6 @@ class PokemonListViewController: BaseViewController {
         let tableView = UITableView()
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
         tableView.backgroundColor = .clear
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.showsVerticalScrollIndicator = false
         tableView.prefetchDataSource = adapter
         tableView.dataSource = adapter

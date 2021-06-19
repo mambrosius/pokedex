@@ -36,23 +36,20 @@ class PokemonCell: UITableViewCell {
         backgroundColor = .clear
         
         // Show:
-        // - number
-        // - image
-        // - name
         // - type?
         
         contentView.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        stackView.setConstraints([
+            .leading(anchor: contentView.leadingAnchor, constant: 16),
+            .trailing(anchor: contentView.trailingAnchor, constant: -16),
+            .centerY(anchor: contentView.centerYAnchor)
         ])
     }
     
     // MARK: - Update
     private func updateCell() {
-        nameLabel.text = pokemonLink?.name
-        idLabel.text = "\(pokemonLink?.id ?? .init())"
+        nameLabel.text = pokemonLink?.name.uppercased()
+        idLabel.text = "#\(pokemonLink?.id ?? .init())"
         
         if let pokemonId = pokemonLink?.id {
             pokemonImageView.kf.setImage(with: getImageUrlFor(pokemonId), options: [.transition(.fade(0.25))])
@@ -72,10 +69,7 @@ class PokemonCell: UITableViewCell {
     
     // MARK: - Components
     lazy var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView(axis: .horizontal, spacing: 10)
         stackView.addArrangedSubview(pokemonImageView)
         stackView.addArrangedSubview(nameLabel)
         stackView.addArrangedSubview(idLabel)
@@ -85,9 +79,10 @@ class PokemonCell: UITableViewCell {
     lazy var pokemonImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        imageView.setConstraints([
+            .height(constant: 40),
+            .width(constant: 40)
+        ])
         return imageView
     }()
     

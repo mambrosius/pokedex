@@ -10,5 +10,6 @@ import UIKit
 // MARK: - Colors
 struct Color {
     static let grayBackground = UIColor(named: "gray-background")
+    static let grayCardInner = UIColor(named: "gray-card-inner")
     static let grayCard = UIColor(named: "gray-card")
 }

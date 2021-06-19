@@ -16,4 +16,12 @@ struct Pokemon: Decodable {
     let stats: [Stat]
     let weight: Int
     let height: Int
+    
+    var heightString: String {
+        "\(Double(height) / 10) m"
+    }
+    
+    var weightString: String {
+        "\(Double(weight) / 10) kg"
+    }
 }

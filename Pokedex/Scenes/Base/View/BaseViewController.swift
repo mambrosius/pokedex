@@ -40,15 +40,34 @@ class BaseViewController: UIViewController {
     }
     
     private func setupBackButton() {
-        guard let navigationStack = navigationController?.viewControllers, navigationStack.count > 1 else { return }
-        navigationItem.hidesBackButton = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Icon.arrowLeft, style: .plain, target: self, action: #selector(backButtonTouched))
+        guard let navigationStack = navigationController?.viewControllers else { return }
+        
+        let isRootViewController = navigationStack.count == 1
+        navigationController?.setNavigationBarHidden(!isRootViewController, animated: true)
+        
+        guard !isRootViewController else { return }
+        view.addSubview(backButton)
+        backButton.setConstraints([
+            .top(anchor: view.safeAreaLayoutGuide.topAnchor, constant: 14),
+            .leading(anchor: view.leadingAnchor, constant: 20),
+            .width(constant: 30),
+            .height(constant: 30)
+        ])
     }
     
     // MARK: - Actions
     @objc private func backButtonTouched() {
         navigationController?.popViewController(animated: true)
     }
+    
+    // Components
+    lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.tintColor = .white
+        button.setImage(Icon.arrowLeft?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(backButtonTouched), for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Utils
     func presentErrorMessage(_ message: String) {
