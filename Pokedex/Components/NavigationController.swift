@@ -21,10 +21,6 @@ class NavigationController: UINavigationController {
     }
     
     private func setup() {
-        navigationBar.barTintColor = Asset.Color.grayBackground
-        navigationBar.tintColor = .white
-        navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.white
-        ]
+        setNavigationBarHidden(true, animated: true)
     }
 }

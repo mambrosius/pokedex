@@ -61,4 +61,11 @@ extension UIView {
         
         return constraints
     }
+    
+    func addDropShadow() {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOffset = .init(width: 0, height: 2)
+        layer.shadowOpacity = 0.8
+        layer.shadowRadius = 5
+    }
 }

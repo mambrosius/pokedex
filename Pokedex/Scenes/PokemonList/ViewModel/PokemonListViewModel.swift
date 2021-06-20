@@ -13,20 +13,32 @@ class PokemonListViewModel: BaseViewModel {
     // MARK: - Variables
     private var isFetching = false
     private var currentPage: PokemonListPage?
+    private var searchText = String()
     private var pokemonLinks = [Link]()
+    private var searchedPokemonLinks = [Link]()
     
     // MARK: - Observables
+    let reloadData = PublishSubject<Bool>()
+    let indexPathsToReload = PublishSubject<[IndexPath]>()
     let showLoadingIndicator = PublishSubject<Bool>()
     let errorMessage = PublishSubject<String>()
-    let indexPathsToReload = PublishSubject<[IndexPath]>()
     
     // MARK: - Computed properties
-    var totalNumberOfItems: Int {
-        currentPage?.count ?? 0
+    var links: [Link] {
+        searchText.isEmpty ? pokemonLinks : searchedPokemonLinks
     }
     
     var currentNumberOfItems: Int {
-        pokemonLinks.count
+        links.count
+    }
+    
+    var totalNumberOfItems: Int {
+        searchText.isEmpty ? currentPage?.count ?? 0 : searchedPokemonLinks.count
+    }
+    
+    var hasMoreToFetch: Bool {
+        guard let currentPage = currentPage else { return true }
+        return currentPage.count > pokemonLinks.count
     }
     
     // MARK: - Api
@@ -35,29 +47,49 @@ class PokemonListViewModel: BaseViewModel {
         
         isFetching = true
         apiService.getPokemons(currentPage?.next) { [weak self] result in
+            self?.isFetching = false
             switch result {
             case .failure(let error):
                 self?.errorMessage.onNext(error.description)
             case .success(let pokemonListPage):
                 self?.currentPage = pokemonListPage
                 self?.pokemonLinks.append(contentsOf: pokemonListPage.results)
-                guard let newIndexPaths = self?.getIndexPathsToReloadFor(pokemonListPage.results) else { return }
-                self?.indexPathsToReload.onNext(newIndexPaths)
+                
+                if let searchText = self?.searchText, !searchText.isEmpty {
+                    self?.performSearch(searchText)
+                } else {
+                    guard let newIndexPaths = self?.getIndexPathsToReloadFor(pokemonListPage.results) else { return }
+                    self?.indexPathsToReload.onNext(newIndexPaths)
+                }
             }
             
-            self?.isFetching = false
             self?.showLoadingIndicator.onNext(false)
         }
     }
     
     // MARK: - Utils
     func getItemAt(_ indexPath: IndexPath) -> Link? {
-        return pokemonLinks.get(indexPath.row)
+        return links.get(indexPath.row)
     }
     
     private func getIndexPathsToReloadFor(_ newListItems: [Link]) -> [IndexPath] {
         let startIndex = currentNumberOfItems - newListItems.count
         let endIndex = startIndex + newListItems.count
         return (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
+    }
+    
+    func performSearch(_ searchText: String? = nil) {
+        if let searchText = searchText {
+            self.searchText = searchText.lowercased()
+        }
+        
+        searchedPokemonLinks = pokemonLinks.filter {
+            $0.name.contains(self.searchText) || "\(String(describing: $0.id))".contains(self.searchText)
+        }
+        
+        reloadData.onNext(true)
+        if hasMoreToFetch {
+            fetchPokemonLinks()
+        }
     }
 }

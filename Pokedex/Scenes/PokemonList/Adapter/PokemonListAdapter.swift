@@ -45,14 +45,6 @@ extension PokemonListAdapter: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView()
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 16
-    }
 }
 
 // MARK: - UITableViewDataSourcePrefetching
@@ -68,5 +60,9 @@ extension PokemonListAdapter: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         delegate?.itemSelectedAt(indexPath)
         return nil
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        delegate?.hideKeyboard()
     }
 }

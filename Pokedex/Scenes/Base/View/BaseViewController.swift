@@ -40,12 +40,8 @@ class BaseViewController: UIViewController {
     }
     
     private func setupBackButton() {
-        guard let navigationStack = navigationController?.viewControllers else { return }
+        guard let navigationStack = navigationController?.viewControllers, navigationStack.count > 1 else { return }
         
-        let isRootViewController = navigationStack.count == 1
-        navigationController?.setNavigationBarHidden(!isRootViewController, animated: true)
-        
-        guard !isRootViewController else { return }
         view.addSubview(backButton)
         backButton.setConstraints([
             .top(anchor: view.safeAreaLayoutGuide.topAnchor, constant: 14),

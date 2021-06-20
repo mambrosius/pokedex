@@ -13,4 +13,5 @@ protocol PokemonListProtocol: AnyObject {
     func getCurrentNumberOfItems() -> Int
     func getTotalNumberOfItems() -> Int
     func fetchNewItems()
+    func hideKeyboard()
 }
