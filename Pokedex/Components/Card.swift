@@ -10,11 +10,15 @@ import UIKit
 class Card: UIView {
     
     // MARK: - Properties
+    private let margin: CGFloat
     private let contentAxis: NSLayoutConstraint.Axis
+    private let contentSpacing: CGFloat
     
     // MARK: - Init
-    init(color: UIColor? = Color.grayCard, cornerRadius: CGFloat = 20, contentAxis: NSLayoutConstraint.Axis) {
+    init(color: UIColor? = Asset.Color.grayCard, cornerRadius: CGFloat = 20, margin: CGFloat = 20, contentAxis: NSLayoutConstraint.Axis, contentSpacing: CGFloat = 20) {
+        self.margin = margin
         self.contentAxis = contentAxis
+        self.contentSpacing = contentSpacing
         super.init(frame: .zero)
         setup(color: color, cornerRadius: cornerRadius)
     }
@@ -30,15 +34,15 @@ class Card: UIView {
         
         addSubview(stackView)
         stackView.setConstraints([
-            .top(anchor: topAnchor, constant: 20),
-            .leading(anchor: leadingAnchor, constant: 20),
-            .trailing(anchor: trailingAnchor, constant: -20),
-            .bottom(anchor: bottomAnchor, constant: -20)
+            .top(anchor: topAnchor, constant: margin),
+            .leading(anchor: leadingAnchor, constant: margin),
+            .trailing(anchor: trailingAnchor, constant: -margin),
+            .bottom(anchor: bottomAnchor, constant: -margin)
         ])
     }
     
     // MARK: - Components
     lazy var stackView: UIStackView = {
-        UIStackView(axis: contentAxis, spacing: 20)
+        UIStackView(axis: contentAxis, spacing: contentSpacing)
     }()
 }

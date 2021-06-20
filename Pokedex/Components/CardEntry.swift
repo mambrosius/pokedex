@@ -36,15 +36,19 @@ class CardEntry: UIStackView {
     
     // MARK: - Components
     lazy var titleLabel: UILabel = {
-        let label = UILabel(text: title)
-        label.textColor = .white
-        return label
+        UILabel(
+            text: title,
+            font: Asset.Font.bold(size: 14),
+            color: UIColor.white.withAlphaComponent(0.8)
+        )
     }()
     
     lazy var valueLabel: UILabel = {
-        let label = UILabel(text: value)
-        label.textAlignment = .right
-        label.textColor = .white
-        return label
+        UILabel(
+            text: value,
+            font: Asset.Font.medium(size: 14),
+            color: UIColor.white.withAlphaComponent(0.5),
+            textAlignment: .right
+        )
     }()
 }

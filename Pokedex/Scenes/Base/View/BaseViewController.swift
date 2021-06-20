@@ -36,7 +36,7 @@ class BaseViewController: UIViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = Color.grayBackground
+        view.backgroundColor = Asset.Color.grayBackground
     }
     
     private func setupBackButton() {
@@ -64,7 +64,7 @@ class BaseViewController: UIViewController {
     lazy var backButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
-        button.setImage(Icon.arrowLeft?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Icon.arrowLeft?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(backButtonTouched), for: .touchUpInside)
         return button
     }()

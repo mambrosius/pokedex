@@ -64,12 +64,6 @@ class PokemonDetailsViewController: BaseViewController {
             .centerX(anchor: scrollView.centerXAnchor)
         ])
         
-        imageView.addSubview(idCard)
-        idCard.setConstraints([
-            .top(anchor: imageView.topAnchor),
-            .trailing(anchor: imageView.trailingAnchor)
-        ])
-        
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(nameCard)
         stackView.addArrangedSubview(statsCard)
@@ -101,7 +95,6 @@ class PokemonDetailsViewController: BaseViewController {
         
         UIView.animate(withDuration: 0.2) {
             self.stackView.alpha = 1
-            self.idCard.alpha = 1
         }
     }
     
@@ -113,59 +106,39 @@ class PokemonDetailsViewController: BaseViewController {
     }()
     
     lazy var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 20
+        let stackView = UIStackView(axis: .vertical, spacing: 20)
         stackView.alpha = 0
         return stackView
     }()
     
     lazy var imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.setConstraints([.height(constant: 200)])
+        let imageView = UIImageView(contentMode: .scaleAspectFit)
+        imageView.setConstraints([.height(constant: 300)])
         return imageView
     }()
     
     lazy var nameCard: Card = {
-        let card = Card(contentAxis: .horizontal)
-        card.setConstraints([.height(constant: 80)])
+        let card = Card(contentAxis: .horizontal, contentSpacing: 10)
         card.stackView.addArrangedSubview(nameLabel)
-        return card
-    }()
-    
-    lazy var idCard: Card = {
-        let card = Card(color: Color.grayCardInner, cornerRadius: 10, contentAxis: .horizontal)
-        card.alpha = 0
-        card.setConstraints([
-            .height(constant: 40),
-            .width(constant: 60)
-        ])
-        
-        card.addSubview(idLabel)
-        idLabel.setConstraints([
-            .top(anchor: card.topAnchor, constant: 5),
-            .leading(anchor: card.leadingAnchor, constant: 10),
-            .trailing(anchor: card.trailingAnchor, constant: -10),
-            .bottom(anchor: card.bottomAnchor, constant: -5)
-        ])
-        
+        card.stackView.addArrangedSubview(idLabel)
         return card
     }()
     
     lazy var idLabel: UILabel = {
-        let label = UILabel()
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
-        label.textAlignment = .center
-        label.textColor = .white
-        return label
+        UILabel(
+            font: Asset.Font.bold(size: 22),
+            color: UIColor.white.withAlphaComponent(0.5),
+            textAlignment: .right
+        )
     }()
     
     lazy var nameLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = .white
+        let label = UILabel(
+            font: Asset.Font.bold(size: 22),
+            color: UIColor.white.withAlphaComponent(0.8)
+        )
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         return label
     }()
     

@@ -56,7 +56,7 @@ class PokemonListViewController: BaseViewController {
             .top(anchor: view.topAnchor),
             .leading(anchor: view.leadingAnchor),
             .trailing(anchor: view.trailingAnchor),
-            .bottom(anchor: view.safeAreaLayoutGuide.bottomAnchor)
+            .bottom(anchor: view.bottomAnchor)
         ])
         
         activityIndicator.startAnimating()
@@ -87,6 +87,7 @@ class PokemonListViewController: BaseViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
+        tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.showsVerticalScrollIndicator = false
         tableView.prefetchDataSource = adapter

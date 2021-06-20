@@ -38,12 +38,29 @@ class PokemonCell: UITableViewCell {
         // Show:
         // - type?
         
-        contentView.addSubview(stackView)
-        stackView.setConstraints([
+        contentView.addSubview(card)
+        card.setConstraints([
+            .top(anchor: contentView.topAnchor, constant: 16),
             .leading(anchor: contentView.leadingAnchor, constant: 16),
             .trailing(anchor: contentView.trailingAnchor, constant: -16),
-            .centerY(anchor: contentView.centerYAnchor)
+            .bottom(anchor: contentView.bottomAnchor)
         ])
+        
+        card.addSubview(idLabel)
+        idLabel.setConstraints([
+            .top(anchor: card.topAnchor, constant: 20),
+            .trailing(anchor: card.trailingAnchor, constant: -20)
+        ])
+        
+        let imageContainer = Card(color: Asset.Color.grayCardInner, cornerRadius: 10, margin: 5, contentAxis: .vertical, contentSpacing: 0)
+        imageContainer.stackView.addArrangedSubview(pokemonImageView)
+        imageContainer.setConstraints([
+            .height(constant: 64),
+            .width(constant: 64)
+        ])
+        
+        card.stackView.addArrangedSubview(imageContainer)
+        card.stackView.addArrangedSubview(nameLabel)
     }
     
     // MARK: - Update
@@ -59,7 +76,11 @@ class PokemonCell: UITableViewCell {
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
+        
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        
     }
     
     // MARK: - Utils
@@ -68,33 +89,29 @@ class PokemonCell: UITableViewCell {
     }
     
     // MARK: - Components
-    lazy var stackView: UIStackView = {
-        let stackView = UIStackView(axis: .horizontal, spacing: 10)
-        stackView.addArrangedSubview(pokemonImageView)
-        stackView.addArrangedSubview(nameLabel)
-        stackView.addArrangedSubview(idLabel)
-        return stackView
+    lazy var card: Card = {
+        Card(contentAxis: .horizontal)
     }()
-    
+        
     lazy var pokemonImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.setConstraints([
-            .height(constant: 40),
-            .width(constant: 40)
-        ])
-        return imageView
+        UIImageView(contentMode: .scaleAspectFit)
     }()
     
     lazy var nameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
+        let label = UILabel(
+            font: Asset.Font.medium(size: 22),
+            color: UIColor.white.withAlphaComponent(0.8)
+        )
+        label.minimumScaleFactor = 0.5
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
     lazy var idLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        return label
+        UILabel(
+            font: Asset.Font.bold(size: 10),
+            color: UIColor.white.withAlphaComponent(0.6),
+            textAlignment: .center
+        )
     }()
 }
