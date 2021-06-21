@@ -66,12 +66,12 @@ class PokemonDetailsViewController: BaseViewController {
         
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(nameCard)
+        stackView.addArrangedSubview(typeCard)
         stackView.addArrangedSubview(statsCard)
         stackView.addArrangedSubview(infoCard)
         
         // Show:
         // - Description
-        // - type
         // - weaknesses
         // - category
         // - gender
@@ -86,8 +86,12 @@ class PokemonDetailsViewController: BaseViewController {
             .transition(.fade(0.25))
         ])
         
+        pokemon.types.forEach {
+            typeCard.stackView.addArrangedSubview(PokemonTypeView(type: $0))
+        }
+        
         pokemon.stats.forEach {
-            statsCard.stackView.addArrangedSubview(CardEntry(title: $0.stat.name, value: "\($0.baseStat)"))
+            statsCard.stackView.addArrangedSubview(StatView(title: $0.stat.name, value: $0.baseStat, width: statsCard.stackView.frame.size.width))
         }
         
         infoCard.stackView.addArrangedSubview(CardEntry(title: "height", value: "\(pokemon.heightString)"))
@@ -118,28 +122,35 @@ class PokemonDetailsViewController: BaseViewController {
     }()
     
     lazy var nameCard: Card = {
-        let card = Card(contentAxis: .horizontal, contentSpacing: 10)
+        let card = Card(margin: 10, contentAxis: .vertical, contentSpacing: 2)
         card.stackView.addArrangedSubview(nameLabel)
         card.stackView.addArrangedSubview(idLabel)
         return card
     }()
     
-    lazy var idLabel: UILabel = {
-        UILabel(
-            font: Asset.Font.bold(size: 22),
-            color: UIColor.white.withAlphaComponent(0.5),
-            textAlignment: .right
-        )
-    }()
-    
     lazy var nameLabel: UILabel = {
         let label = UILabel(
             font: Asset.Font.bold(size: 22),
-            color: UIColor.white.withAlphaComponent(0.8)
+            color: UIColor.white.withAlphaComponent(0.8),
+            textAlignment: .center
         )
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
         return label
+    }()
+    
+    lazy var idLabel: UILabel = {
+        UILabel(
+            font: Asset.Font.medium(size: 16),
+            color: UIColor.white.withAlphaComponent(0.2),
+            textAlignment: .center
+        )
+    }()
+    
+    lazy var typeCard: Card = {
+        let card = Card(contentAxis: .horizontal)
+        card.stackView.distribution = .fillEqually
+        return card
     }()
     
     lazy var statsCard: Card = {

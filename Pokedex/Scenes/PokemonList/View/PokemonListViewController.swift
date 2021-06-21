@@ -52,7 +52,6 @@ class PokemonListViewController: BaseViewController {
     
     override func setupUI() {
         super.setupUI()
-        title = "Pokédex"
         
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
@@ -160,6 +159,7 @@ extension PokemonListViewController: PokemonListProtocol {
         guard let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) else { return }
         let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: .init(pokemonLink: item))
         navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
+        hideKeyboard()
     }
     
     func hideKeyboard() {

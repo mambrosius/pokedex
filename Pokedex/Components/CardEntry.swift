@@ -37,9 +37,9 @@ class CardEntry: UIStackView {
     // MARK: - Components
     lazy var titleLabel: UILabel = {
         UILabel(
-            text: title,
-            font: Asset.Font.bold(size: 14),
-            color: UIColor.white.withAlphaComponent(0.8)
+            text: title.uppercased(),
+            font: Asset.Font.medium(size: 14),
+            color: UIColor.white.withAlphaComponent(0.5)
         )
     }()
     
@@ -47,7 +47,7 @@ class CardEntry: UIStackView {
         UILabel(
             text: value,
             font: Asset.Font.medium(size: 14),
-            color: UIColor.white.withAlphaComponent(0.5),
+            color: UIColor.white.withAlphaComponent(0.2),
             textAlignment: .right
         )
     }()
