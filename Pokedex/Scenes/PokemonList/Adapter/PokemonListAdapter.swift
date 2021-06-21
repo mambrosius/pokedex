@@ -31,7 +31,7 @@ extension PokemonListAdapter: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PokemonCell.identifier) as? PokemonCell else { fatalError() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PokemonCell.identifier) as? PokemonCell else { fatalError("Failed to dequeue PokemonCell") }
         
         if isMissingDataAt(indexPath) {
             // add shimmer
@@ -51,7 +51,7 @@ extension PokemonListAdapter: UITableViewDataSource {
 extension PokemonListAdapter: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         guard let indexPath = indexPaths.last, isMissingDataAt(indexPath) else { return }
-        delegate?.fetchNewItems()
+        delegate?.fetchNextPage()
     }
 }
 
@@ -60,9 +60,5 @@ extension PokemonListAdapter: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         delegate?.itemSelectedAt(indexPath)
         return nil
-    }
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        delegate?.hideKeyboard()
     }
 }

@@ -11,14 +11,18 @@ class Card: UIView {
     
     // MARK: - Properties
     private let margin: CGFloat
-    private let contentAxis: NSLayoutConstraint.Axis
-    private let contentSpacing: CGFloat
+    private let stackView: UIStackView
+    
+    // MARK: - ComputedProperties
+    var contentWidth: CGFloat {
+        stackView.frame.size.width
+    }
     
     // MARK: - Init
-    init(color: UIColor? = Asset.Color.grayCard, cornerRadius: CGFloat = 20, margin: CGFloat = 20, contentAxis: NSLayoutConstraint.Axis, contentSpacing: CGFloat = 20) {
+    init(color: UIColor? = Asset.Color.grayCard, cornerRadius: CGFloat = 20, margin: CGFloat = 20, stackView: UIStackView = UIStackView(axis: .horizontal, spacing: 20)) {
         self.margin = margin
-        self.contentAxis = contentAxis
-        self.contentSpacing = contentSpacing
+        self.stackView = stackView
+        
         super.init(frame: .zero)
         setup(color: color, cornerRadius: cornerRadius)
     }
@@ -31,7 +35,7 @@ class Card: UIView {
     private func setup(color: UIColor?, cornerRadius: CGFloat) {
         backgroundColor = color
         layer.cornerRadius = cornerRadius
-        
+                
         addSubview(stackView)
         stackView.setConstraints([
             .top(anchor: topAnchor, constant: margin),
@@ -41,8 +45,8 @@ class Card: UIView {
         ])
     }
     
-    // MARK: - Components
-    lazy var stackView: UIStackView = {
-        UIStackView(axis: contentAxis, spacing: contentSpacing)
-    }()
+    // MARK: - Utils
+    func addArrangedSubview(_ view: UIView) {
+        stackView.addArrangedSubview(view)
+    }
 }

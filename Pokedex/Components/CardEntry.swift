@@ -35,7 +35,7 @@ class CardEntry: UIStackView {
     }
     
     // MARK: - Components
-    lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         UILabel(
             text: title.uppercased(),
             font: Asset.Font.medium(size: 14),
@@ -43,7 +43,7 @@ class CardEntry: UIStackView {
         )
     }()
     
-    lazy var valueLabel: UILabel = {
+    private lazy var valueLabel: UILabel = {
         UILabel(
             text: value,
             font: Asset.Font.medium(size: 14),

@@ -39,9 +39,9 @@ class PokemonDetailsViewController: BaseViewController {
             .subscribe(onNext: updateView)
             .disposed(by: disposeBag)
         
-        viewModel.errorMessage
+        viewModel.error
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: presentErrorMessage)
+            .subscribe(onNext: presentError)
             .disposed(by: disposeBag)
     }
     
@@ -73,7 +73,6 @@ class PokemonDetailsViewController: BaseViewController {
         // Show:
         // - Description
         // - weaknesses
-        // - category
         // - gender
         // - evolutions
     }
@@ -87,15 +86,15 @@ class PokemonDetailsViewController: BaseViewController {
         ])
         
         pokemon.types.forEach {
-            typeCard.stackView.addArrangedSubview(PokemonTypeView(type: $0))
+            typeCard.addArrangedSubview(PokemonTypeView(type: $0))
         }
         
         pokemon.stats.forEach {
-            statsCard.stackView.addArrangedSubview(StatView(title: $0.stat.name, value: $0.baseStat, width: statsCard.stackView.frame.size.width))
+            statsCard.addArrangedSubview(StatView(title: $0.link.name, value: $0.baseStat, width: statsCard.contentWidth))
         }
         
-        infoCard.stackView.addArrangedSubview(CardEntry(title: "height", value: "\(pokemon.heightString)"))
-        infoCard.stackView.addArrangedSubview(CardEntry(title: "weight", value: "\(pokemon.weightString)"))
+        infoCard.addArrangedSubview(CardEntry(title: "height", value: "\(pokemon.heightString)"))
+        infoCard.addArrangedSubview(CardEntry(title: "weight", value: "\(pokemon.weightString)"))
         
         UIView.animate(withDuration: 0.2) {
             self.stackView.alpha = 1
@@ -103,32 +102,32 @@ class PokemonDetailsViewController: BaseViewController {
     }
     
     // MARK: - Components
-    lazy var scrollView: UIScrollView = {
+    private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
     
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let stackView = UIStackView(axis: .vertical, spacing: 20)
         stackView.alpha = 0
         return stackView
     }()
     
-    lazy var imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView(contentMode: .scaleAspectFit)
         imageView.setConstraints([.height(constant: 300)])
         return imageView
     }()
     
-    lazy var nameCard: Card = {
-        let card = Card(margin: 10, contentAxis: .vertical, contentSpacing: 2)
-        card.stackView.addArrangedSubview(nameLabel)
-        card.stackView.addArrangedSubview(idLabel)
+    private lazy var nameCard: Card = {
+        let card = Card(margin: 10, stackView: .init(axis: .vertical, spacing: 2))
+        card.addArrangedSubview(nameLabel)
+        card.addArrangedSubview(idLabel)
         return card
     }()
     
-    lazy var nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let label = UILabel(
             font: Asset.Font.bold(size: 22),
             color: UIColor.white.withAlphaComponent(0.8),
@@ -139,7 +138,7 @@ class PokemonDetailsViewController: BaseViewController {
         return label
     }()
     
-    lazy var idLabel: UILabel = {
+    private lazy var idLabel: UILabel = {
         UILabel(
             font: Asset.Font.medium(size: 16),
             color: UIColor.white.withAlphaComponent(0.2),
@@ -147,17 +146,15 @@ class PokemonDetailsViewController: BaseViewController {
         )
     }()
     
-    lazy var typeCard: Card = {
-        let card = Card(contentAxis: .horizontal)
-        card.stackView.distribution = .fillEqually
-        return card
+    private lazy var typeCard: Card = {
+        Card(stackView: .init(axis: .horizontal, distribution: .fillEqually, spacing: 20))
     }()
     
-    lazy var statsCard: Card = {
-        Card(contentAxis: .vertical)
+    private lazy var statsCard: Card = {
+        Card(stackView: .init(axis: .vertical, spacing: 20))
     }()
     
-    lazy var infoCard: Card = {
-        Card(contentAxis: .vertical)
+    private lazy var infoCard: Card = {
+        Card(stackView: .init(axis: .vertical, spacing: 20))
     }()
 }

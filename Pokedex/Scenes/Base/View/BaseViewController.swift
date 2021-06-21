@@ -57,7 +57,7 @@ class BaseViewController: UIViewController {
     }
     
     // Components
-    lazy var backButton: UIButton = {
+    private lazy var backButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
         button.setImage(Asset.Icon.arrowLeft?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -66,8 +66,8 @@ class BaseViewController: UIViewController {
     }()
     
     // MARK: - Utils
-    func presentErrorMessage(_ message: String) {
-        let alertCon = UIAlertController(title: "Opps..", message: message, preferredStyle: .alert)
+    func presentError(_ error: Error) {
+        let alertCon = UIAlertController(title: "Opps..", message: error.localizedDescription, preferredStyle: .alert)
         alertCon.addAction(.init(title: "OK", style: .default))
         present(alertCon, animated: true)
     }

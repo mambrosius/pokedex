@@ -10,11 +10,11 @@ import Foundation
 struct Stat: Decodable {
     let baseStat: Int
     let effort: Int
-    let stat: Link
+    let link: Link
     
     enum CodingKeys: String, CodingKey {
         case baseStat = "base_stat"
         case effort
-        case stat
+        case link = "stat"
     }
 }

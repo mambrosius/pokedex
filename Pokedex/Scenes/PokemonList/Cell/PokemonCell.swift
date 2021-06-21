@@ -35,9 +35,6 @@ class PokemonCell: UITableViewCell {
     private func setup() {
         backgroundColor = .clear
         
-        // Show:
-        // - type?
-        
         contentView.addSubview(card)
         card.setConstraints([
             .top(anchor: contentView.topAnchor, constant: 16),
@@ -46,27 +43,31 @@ class PokemonCell: UITableViewCell {
             .bottom(anchor: contentView.bottomAnchor)
         ])
         
-        card.addSubview(idLabel)
-        idLabel.setConstraints([
+        card.addSubview(identifierLabel)
+        identifierLabel.setConstraints([
             .top(anchor: card.topAnchor, constant: 20),
             .trailing(anchor: card.trailingAnchor, constant: -20)
         ])
         
-        let imageContainer = Card(color: Asset.Color.grayCardInner, cornerRadius: 10, margin: 5, contentAxis: .vertical, contentSpacing: 0)
-        imageContainer.stackView.addArrangedSubview(pokemonImageView)
+        let imageContainer = Card(
+            color: Asset.Color.grayCardInner, cornerRadius: 10, margin: 5,
+            stackView: .init(axis: .vertical, spacing: 0)
+        )
+        
+        imageContainer.addArrangedSubview(pokemonImageView)
         imageContainer.setConstraints([
             .height(constant: 64),
             .width(constant: 64)
         ])
         
-        card.stackView.addArrangedSubview(imageContainer)
-        card.stackView.addArrangedSubview(nameLabel)
+        card.addArrangedSubview(imageContainer)
+        card.addArrangedSubview(nameLabel)
     }
     
     // MARK: - Update
     private func updateCell() {
         nameLabel.text = pokemonLink?.name.uppercased()
-        idLabel.text = "#\(pokemonLink?.id ?? .init())"
+        identifierLabel.text = "#\(pokemonLink?.id ?? .init())"
         
         if let pokemonId = pokemonLink?.id {
             pokemonImageView.kf.setImage(with: getImageUrlFor(pokemonId), options: [.transition(.fade(0.25))])
@@ -89,15 +90,15 @@ class PokemonCell: UITableViewCell {
     }
     
     // MARK: - Components
-    lazy var card: Card = {
-        Card(contentAxis: .horizontal)
+    private lazy var card: Card = {
+        Card()
     }()
         
-    lazy var pokemonImageView: UIImageView = {
+    private lazy var pokemonImageView: UIImageView = {
         UIImageView(contentMode: .scaleAspectFit)
     }()
     
-    lazy var nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let label = UILabel(
             font: Asset.Font.medium(size: 22),
             color: UIColor.white.withAlphaComponent(0.8)
@@ -107,7 +108,7 @@ class PokemonCell: UITableViewCell {
         return label
     }()
     
-    lazy var idLabel: UILabel = {
+    private lazy var identifierLabel: UILabel = {
         UILabel(
             font: Asset.Font.bold(size: 10),
             color: UIColor.white.withAlphaComponent(0.6),

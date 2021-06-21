@@ -9,5 +9,10 @@ import Foundation
 
 struct Type: Decodable {
     let slot: Int
-    let type: Link
+    let link: Link
+    
+    enum CodingKeys: String, CodingKey {
+        case slot
+        case link = "type"
+    }
 }

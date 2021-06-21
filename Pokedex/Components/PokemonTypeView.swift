@@ -16,11 +16,8 @@ class PokemonTypeView: Card {
     init(type: Type) {
         self.type = type
         super.init(
-            color: Asset.Color.pokemonType(type.type.id)?.withAlphaComponent(0.8),
-            cornerRadius: 10,
-            margin: 5,
-            contentAxis: .horizontal,
-            contentSpacing: 5
+            color: Asset.Color.pokemonType(type.link.id)?.withAlphaComponent(0.8), cornerRadius: 10,
+            margin: 5, stackView: .init(axis: .horizontal, spacing: 5)
         )
         setup()
     }
@@ -31,13 +28,13 @@ class PokemonTypeView: Card {
     
     // MARK: - Setup
     private func setup() {
-        stackView.addArrangedSubview(_label)
+        addArrangedSubview(label)
     }
     
     // MARK: - Components
-    lazy var _label: UILabel = {
+    private lazy var label: UILabel = {
         let label = UILabel(
-            text: type.type.name.uppercased(),
+            text: type.link.name.uppercased(),
             font: Asset.Font.bold(size: 14),
             color: UIColor.white.withAlphaComponent(0.8),
             textAlignment: .center

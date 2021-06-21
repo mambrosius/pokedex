@@ -39,7 +39,7 @@ class StatView: UIStackView {
     }
     
     // MARK: - Components
-    lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         UILabel(
             text: title.uppercased(),
             font: Asset.Font.medium(size: 14),
@@ -47,7 +47,7 @@ class StatView: UIStackView {
         )
     }()
     
-    lazy var valueLabel: UILabel = {
+    private lazy var valueLabel: UILabel = {
         UILabel(
             text: "\(value)/255",
             font: Asset.Font.medium(size: 14),
@@ -56,7 +56,7 @@ class StatView: UIStackView {
         )
     }()
     
-    lazy var lineChart: UIStackView = {
+    private lazy var lineChart: UIStackView = {
         let stackView = UIStackView(axis: .horizontal, spacing: 0)
         stackView.setConstraints([.height(constant: 2)])
         stackView.addArrangedSubview(filledSegment)
@@ -64,14 +64,14 @@ class StatView: UIStackView {
         return stackView
     }()
     
-    lazy var filledSegment: UIView = {
+    private lazy var filledSegment: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
         view.setConstraints([.width(constant: frame.size.width * (CGFloat(value) / 255))])
         return view
     }()
     
-    lazy var unfilledSegment: UIView = {
+    private lazy var unfilledSegment: UIView = {
         let view = UIView()
         view.backgroundColor = Asset.Color.grayCardInner
         return view

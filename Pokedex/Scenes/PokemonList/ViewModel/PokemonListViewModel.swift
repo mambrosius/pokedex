@@ -21,7 +21,7 @@ class PokemonListViewModel: BaseViewModel {
     let reloadData = PublishSubject<Bool>()
     let indexPathsToReload = PublishSubject<[IndexPath]>()
     let showLoadingIndicator = PublishSubject<Bool>()
-    let errorMessage = PublishSubject<String>()
+    let error = PublishSubject<Error>()
     
     // MARK: - Computed properties
     var links: [Link] {
@@ -46,11 +46,11 @@ class PokemonListViewModel: BaseViewModel {
         guard !isFetching else { return }
         
         isFetching = true
-        apiService.getPokemons(currentPage?.next) { [weak self] result in
+        apiService.fetchPokemons(currentPage?.next) { [weak self] result in
             self?.isFetching = false
             switch result {
             case .failure(let error):
-                self?.errorMessage.onNext(error.description)
+                self?.error.onNext(error)
             case .success(let pokemonListPage):
                 self?.currentPage = pokemonListPage
                 self?.pokemonLinks.append(contentsOf: pokemonListPage.results)
@@ -69,7 +69,7 @@ class PokemonListViewModel: BaseViewModel {
     
     // MARK: - Utils
     func getItemAt(_ indexPath: IndexPath) -> Link? {
-        return links.get(indexPath.row)
+        return links[safe: indexPath.row]
     }
     
     private func getIndexPathsToReloadFor(_ newListItems: [Link]) -> [IndexPath] {
@@ -80,11 +80,11 @@ class PokemonListViewModel: BaseViewModel {
     
     func performSearch(_ searchText: String? = nil) {
         if let searchText = searchText {
-            self.searchText = searchText.lowercased()
+            self.searchText = searchText
         }
         
         searchedPokemonLinks = pokemonLinks.filter {
-            $0.name.contains(self.searchText) || "\(String(describing: $0.id))".contains(self.searchText)
+            $0.name.localizedCaseInsensitiveContains(self.searchText) || "\(String(describing: $0.id))".contains(self.searchText)
         }
         
         reloadData.onNext(true)

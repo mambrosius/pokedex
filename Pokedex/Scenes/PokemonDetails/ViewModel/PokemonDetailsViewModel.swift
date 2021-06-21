@@ -16,7 +16,7 @@ class PokemonDetailsViewModel: BaseViewModel {
     // MARK: - Observables
     let showLoadingIndicator = PublishSubject<Bool>()
     let fetchedPokemon = PublishSubject<Pokemon>()
-    let errorMessage = PublishSubject<String>()
+    let error = PublishSubject<Error>()
     
     // MARK: - Init
     init(apiService: ApiServiceProtocol = ApiService(), pokemonLink: Link) {
@@ -26,10 +26,10 @@ class PokemonDetailsViewModel: BaseViewModel {
     
     // MARK: - Api
     func fetchPokemon() {
-        apiService.getPokemon(pokemonLink.url) { [weak self] result in
+        apiService.fetchPokemon(pokemonLink.url) { [weak self] result in
             switch result {
             case .failure(let error):
-                self?.errorMessage.onNext(error.description)
+                self?.error.onNext(error)
             case .success(let pokemon):
                 self?.fetchedPokemon.onNext(pokemon)
             }

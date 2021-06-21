@@ -44,9 +44,9 @@ class PokemonListViewController: BaseViewController {
             .subscribe(onNext: updateTableView)
             .disposed(by: disposeBag)
         
-        viewModel.errorMessage
+        viewModel.error
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: presentErrorMessage)
+            .subscribe(onNext: presentError)
             .disposed(by: disposeBag)
     }
     
@@ -106,6 +106,7 @@ class PokemonListViewController: BaseViewController {
         tableView.contentInset = .init(top: 56, left: 0, bottom: 16, right: 0)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        tableView.keyboardDismissMode = .onDrag
         tableView.showsVerticalScrollIndicator = false
         tableView.prefetchDataSource = adapter
         tableView.dataSource = adapter
@@ -130,8 +131,8 @@ class PokemonListViewController: BaseViewController {
     }()
     
     private lazy var card: Card = {
-        let card = Card(color: Asset.Color.grayCardInner, margin: 0, contentAxis: .horizontal)
-        card.stackView.addArrangedSubview(searchBar)
+        let card = Card(color: Asset.Color.grayCardInner, margin: 0)
+        card.addArrangedSubview(searchBar)
         card.addDropShadow()
         return card
     }()
@@ -151,7 +152,7 @@ extension PokemonListViewController: PokemonListProtocol {
         return viewModel.totalNumberOfItems
     }
     
-    func fetchNewItems() {
+    func fetchNextPage() {
         viewModel.fetchPokemonLinks()
     }
     
@@ -159,10 +160,6 @@ extension PokemonListViewController: PokemonListProtocol {
         guard let item = viewModel.getItemAt(indexPath), UIApplication.shared.canOpenURL(item.url) else { return }
         let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: .init(pokemonLink: item))
         navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
-        hideKeyboard()
-    }
-    
-    func hideKeyboard() {
         view.endEditing(true)
     }
 }

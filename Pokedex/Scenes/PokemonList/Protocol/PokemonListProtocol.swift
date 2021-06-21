@@ -12,6 +12,5 @@ protocol PokemonListProtocol: AnyObject {
     func itemSelectedAt(_ indexPath: IndexPath)
     func getCurrentNumberOfItems() -> Int
     func getTotalNumberOfItems() -> Int
-    func fetchNewItems()
-    func hideKeyboard()
+    func fetchNextPage()
 }

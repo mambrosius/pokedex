@@ -8,23 +8,23 @@
 import Foundation
 
 // MARK: - Typealias
-typealias ApiServiceResult<T> = (Result<T, ApiServiceError>) -> Void
+typealias ApiServiceResult<T> = (Result<T, Error>) -> Void
 
 // MARK: - ApiService
-class ApiService: ApiServiceProtocol {
+final class ApiService: ApiServiceProtocol {
     
     // MARK: - Properties
-    lazy var decoder: JSONDecoder = {
+    private lazy var decoder: JSONDecoder = {
         JSONDecoder()
     }()
     
     // MARK: - ApiServiceProtocol
-    func getPokemons(_ nextPageUrl: URL?, completion: @escaping ApiServiceResult<PokemonListPage>) {
-        get(nextPageUrl?.absoluteString ?? "https://pokeapi.co/api/v2/pokemon", completion)
+    func fetchPokemons(_ nextPageUrl: URL?, completion: @escaping ApiServiceResult<PokemonListPage>) {
+        fetch(nextPageUrl?.absoluteString ?? "https://pokeapi.co/api/v2/pokemon", completion)
     }
     
-    func getPokemon(_ url: URL, completion: @escaping ApiServiceResult<Pokemon>) {
-        get(url.absoluteString, completion)
+    func fetchPokemon(_ url: URL, completion: @escaping ApiServiceResult<Pokemon>) {
+        fetch(url.absoluteString, completion)
     }
     
     // MARK: - Utils
@@ -32,24 +32,21 @@ class ApiService: ApiServiceProtocol {
         URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png")
     }
     
-    private func get<T: Decodable>(_ url: String, _ completion: @escaping ApiServiceResult<T>) {
-        guard let url = URL(string: url) else {
-            completion(.failure(.client("Invalid url")))
-            return
-        }
+    private func fetch<T: Decodable>(_ urlString: String, _ completion: @escaping ApiServiceResult<T>) {
+        guard let url = URL(string: urlString) else { fatalError("Failed to parse string to URL: \(urlString)") }
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
-                completion(.failure(.server(error.localizedDescription)))
+                completion(.failure(error))
             } else if let data = data {
                 do {
                     let response = try self.decoder.decode(T.self, from: data)
                     completion(.success(response))
                 } catch {
-                    completion(.failure(.parser(error.localizedDescription)))
+                    completion(.failure(error))
                 }
             } else {
-                completion(.failure(.server("No data")))
+                completion(.failure(CustomError(errorDescription: "No data")))
             }
         }.resume()
     }
